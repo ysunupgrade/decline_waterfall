@@ -1,0 +1,43 @@
+-- decline_qc_v32
+
+if [ADVERSE_ACTIONS] in ('account_blocked','CheckPhoneForVOIPBlockedRule',
+'email_blocked','ip_blocked','multifactorknockoutrule2','name_dob_blocked','phone_blocked','traveler_name_dob_blocked') then '0.PRE UW FRAUD'
+elseif [ADVERSE_ACTIONS] in ('APPLICANT_NOT_FOUND_AT_BUREAU') then '0.1 APPLICANT NOT FOUND AT BUREAU'
+elseif ISNULL([FICO8_TU]) or [FICO8_TU] < 550 then '1 FICO < 550'
+elseif [G059S] > 12 then '2 G059S>12'
+elseif [S063S] > 2500 then '3 S063S>2500'
+elseif [S114S] > 9 then '4 S114S>9'
+elseif ISNULL([AT20S]) or [AT20S] < 3 then '5 AT20S<3'
+elseif ISNULL([G106S]) or [G106S] < 9 then '6 G106S<9'
+elseif [S207S] >= 0 and [S207S] < 12 then '8 S207S<12'
+elseif [S207A] >= 0 and [S207A] < 12 then '8 S207A<12'
+elseif [G094S] > 1 then '9 G094S>1'
+elseif [REALTIMEPBOSUMSSN] >= [max_amount_v32] then '11 PROGRAM BALANCE'
+elseif [RTMMAXDAYSPASTDUE] >= 7 then '13 PAST DUE 7 DAYS'
+elseif [RTMNUMCHARGEDOFF] > 0 then '14 CHARGED OFF'
+
+elseif [fprm1] >= [fprm1_decline_threshold_v32] then '16 FRPM1'
+
+elseif not ISNULL([FTR1]) and [FTR1] >= [ftr1_decline_threshold_v32] then '18 FRT1'
+
+elseif [STATE] = 'WA' and [APR_V17] >= 0.25 then '19 OTHER:STATE RESTRICTION'
+elseif [STATE] = 'MD' and [APR_V17] >= 0.24 then '19 OTHER:STATE RESTRICTION'
+elseif [STATE] = 'MA' and ([ORDER_AMOUNT] <= 6000 and [APR_V17] >= 0.12) then '19 OTHER:STATE RESTRICTION'
+elseif [STATE] = 'NJ' and [APR_V17] >= 0.30 then '19 OTHER:STATE RESTRICTION'
+elseif [STATE] = 'CO' and [APR_V17] >= 0.21 then '19 OTHER:STATE RESTRICTION'
+elseif [STATE] = 'NY' and [APR_V17] >= 0.25 then '19 OTHER:STATE RESTRICTION'
+elseif [STATE] = 'CT' and ([ORDER_AMOUNT] >= 5000 and [APR_V17] >= 0.25) then '19 OTHER:STATE RESTRICTION'
+elseif [STATE] = 'WI' and ([ORDER_AMOUNT] <= 2000 and [TERM1] > 24) then '19 OTHER:STATE RESTRICTION'
+elseif [STATE] in ('DC','IA','WV') then '19 OTHER:STATE RESTRICTION'
+
+elseif [APR_V17] > 0.3599 then '20 OTHER:APR RESTRICTION'
+
+elseif [ORDER_AMOUNT] - ([max_amount_v32] - [REALTIMEPBOSUMSSN]) > 0.5 * [ORDER_AMOUNT] then '21 OTHER: MAX CAP RESTRICTION'
+
+elseif [POST_UW_FRAUD] = True then '22 POST UW FRAUD'
+
+// elseif [ORDER_AMOUNT] < 48 or [ADVERSE_ACTIONS] in ('TRIP_ITINERARY') then '23 TRIP_ITINERARY'
+
+else null
+end
+
