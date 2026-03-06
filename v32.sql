@@ -1,5 +1,8 @@
-
+------------------------------------------------------------
+------------------------------------------------------------
 -- decline_qc_v32
+------------------------------------------------------------
+------------------------------------------------------------
 
 if [ADVERSE_ACTIONS] in ('account_blocked','CheckPhoneForVOIPBlockedRule',
 'email_blocked','ip_blocked','multifactorknockoutrule2','name_dob_blocked','phone_blocked','traveler_name_dob_blocked') then '0.PRE UW FRAUD'
@@ -41,4 +44,390 @@ elseif [POST_UW_FRAUD] = True then '22 POST UW FRAUD'
 
 else null
 end
+  
+------------------------------------------------------------
+------------------------------------------------------------
+-- max_amount_v32
+------------------------------------------------------------
+------------------------------------------------------------
+
+  
+if [UPCODE] in ('UP-79934337-50', 'UP-79934337-55', 'UP-79934337-59', 'UP-79934337-1') then
+    (if [FICO8_TU] >= 780 and [fprm1] < 0.04 then 500000
+    elseif [FICO8_TU] >= 780 and [fprm1] >= 0.04 then 250000
+    elseif [FICO8_TU] >= 750 then 60000
+    elseif [FICO8_TU] >= 700 then 50000
+    elseif [FICO8_TU] >= 660 and [fprm1] < 0.06 then 20000
+    elseif [FICO8_TU] >= 660 and [fprm1] >= 0.06 then 12000
+    elseif [FICO8_TU] >= 600 and [fprm1] < 0.07 then 10000
+    elseif [FICO8_TU] >= 600 and [fprm1] >= 0.07 then 5000
+    elseif [FICO8_TU] < 600 and [fprm1] < 0.08 then 3000
+    elseif [FICO8_TU] < 600 and [fprm1] >= 0.08 then 1500
+    else 0
+    end)
+
+elseif [UPCODE] = 'UP-32535293-54' then
+    (if [FICO8_TU] > 720 then 120000
+    else 0
+    end)
+
+elseif [UPCODE] in ('UP-20956569-3', 'UP-20956569-1', 'UP-20956569-99', 'UP-20956569-98', 'UP-20956569-6', 'UP-20956569-7') then
+    (if [FICO8_TU] >= 720 and [fprm1] < 0.04 then 25000
+    elseif [FICO8_TU] >= 720 and [fprm1] >= 0.04 then 15000
+    elseif [FICO8_TU] >= 660 and [fprm1] < 0.06 then 20000
+    elseif [FICO8_TU] >= 660 and [fprm1] >= 0.06 then 12000
+    elseif [FICO8_TU] >= 600 and [fprm1] < 0.07 then 10000
+    elseif [FICO8_TU] >= 600 and [fprm1] >= 0.07 then 5000
+    elseif [FICO8_TU] < 600 and [fprm1] < 0.08 and [ADVANCE_PURCHASE_DAYS] >= 120 then 4000
+    elseif [FICO8_TU] < 600 and [fprm1] < 0.08 and [ADVANCE_PURCHASE_DAYS] < 120 then 3000
+    elseif [FICO8_TU] < 600 and [fprm1] >= 0.08 and [ADVANCE_PURCHASE_DAYS] >= 120 then 4000
+    elseif [FICO8_TU] < 600 and [fprm1] >= 0.08 and [ADVANCE_PURCHASE_DAYS] < 120 then 1500
+    else 0
+    end)
+
+elseif [UPCODE] = 'UP-43928860-60' then
+    (if [FICO8_TU] >= 780 then 100000
+    elseif [FICO8_TU] >= 700 then 75000
+    elseif [FICO8_TU] >= 660 then 50000
+    elseif [FICO8_TU] >= 620 then 15000
+    elseif [FICO8_TU] < 620 then 10000
+    else 0
+    end)
+
+else
+    (if [FICO8_TU] >= 780 and [fprm1] >= 0.02 then 15000
+    elseif [FICO8_TU] >= 780 and [fprm1] < 0.02 then 50000
+    elseif [FICO8_TU] >= 720 and [fprm1] < 0.04 then 30000
+    elseif [FICO8_TU] >= 720 and [fprm1] >= 0.04 then 15000
+    elseif [FICO8_TU] >= 660 and [fprm1] < 0.06 then 20000
+    elseif [FICO8_TU] >= 660 and [fprm1] >= 0.06 then 12000
+    elseif [FICO8_TU] >= 600 and [fprm1] < 0.07 then 10000
+    elseif [FICO8_TU] >= 600 and [fprm1] >= 0.07 then 5000
+    elseif [FICO8_TU] < 600 and [fprm1] < 0.08 then 3000
+    elseif [FICO8_TU] < 600 and [fprm1] >= 0.08 then 1500
+    else 0
+    end)
+
+end
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- fprm1_decline_threshold_v32
+------------------------------------------------------------
+------------------------------------------------------------
+
+if ([ADVANCE_PURCHASE_DAYS] >= 120 
+and [UPCODE] in ('UP-20956569-3', 'UP-20956569-1', 'UP-20956569-99', 'UP-20956569-98', 'UP-20956569-6', 'UP-20956569-7'))
+or ([UPCODE] in ('UP-43928860-1','UP-43928860-2') and [FICO8_TU] >= 620 and [LOYALTY_FLAG] = 'True') 
+then [fprm1_decline_threshold_tb_b_v17]
+
+elseif [UPCODE] in ('UP-79934337-50', 'UP-79934337-55', 'UP-79934337-59', 'UP-79934337-1', 
+                     'UP-79934337-51', 'UP-79934337-54', 'UP-79934337-52', 'UP-79934337-56', 
+                     'UP-79934337-57', 'UP-79934337-53', 'UP-79934337-61', 'UP-79934337-58', 
+                     'UP-79934337-62', 'UP-79934337-63', 'UP-79934337-60') 
+and [FICO8_TU] < 700 then [fprm1_decline_threshold_tb_f_v24]
+
+elseif [UPCODE] in ('UP-17367120-1', 'UP-17367120-50', 'UP-17367120-3') 
+then [fprm1_decline_threshold_tb_c_v17]
+
+elseif [UPCODE] = 'UP-43928860-60' then [fprm1_decline_threshold_tb_g_v32]
+
+elseif [known_user] = 1 or ([FICO8_TU] >= 620 and [LOYALTY_FLAG] = 'True') then [fprm1_decline_threshold_tb_a_v17]
+
+else
+    (if [merchant_lookup] = 'CARNIVAL' or [THIRDPARTYLOAN] = 0 then [fprm1_decline_threshold_tb_d_v17]
+    elseif ([merchant_lookup] <> 'CARNIVAL' or ISNULL([merchant_lookup])) and [THIRDPARTYLOAN] = 1 
+then [fprm1_decline_threshold_tb_e_v17]
+    else null
+    end)
+end
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- fprm1_decline_threshold_tb_b_v17
+------------------------------------------------------------
+------------------------------------------------------------
+
+IF [FICO8_TU] >= 780 THEN 0.28
+ELSEIF [FICO8_TU] >= 740 AND [FICO8_TU] < 780 THEN 0.28
+ELSEIF [FICO8_TU] >= 700 AND [FICO8_TU] < 740 THEN 0.28
+ELSEIF [FICO8_TU] >= 660 AND [FICO8_TU] < 700 THEN 0.31
+ELSEIF [FICO8_TU] >= 620 AND [FICO8_TU] < 660 THEN 0.31
+ELSEIF [FICO8_TU] >= 580 AND [FICO8_TU] < 620 THEN 0.34
+ELSEIF [FICO8_TU] >= 540 AND [FICO8_TU] < 580 THEN 0.34
+ELSEIF [FICO8_TU] < 540 THEN 0
+ELSE NULL
+END
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- fprm1_decline_threshold_tb_f_v24
+------------------------------------------------------------
+------------------------------------------------------------
+
+IF [FICO8_TU] >= 780 THEN 1
+ELSEIF [FICO8_TU] >= 740 AND [FICO8_TU] < 780 THEN 1
+ELSEIF [FICO8_TU] >= 700 AND [FICO8_TU] < 740 THEN 1
+ELSEIF [FICO8_TU] >= 660 AND [FICO8_TU] < 700 THEN 0.10
+ELSEIF [FICO8_TU] >= 620 AND [FICO8_TU] < 660 THEN 0.10
+ELSEIF [FICO8_TU] >= 580 AND [FICO8_TU] < 620 THEN 0.10
+ELSEIF [FICO8_TU] >= 540 AND [FICO8_TU] < 580 THEN 0.10
+ELSEIF [FICO8_TU] < 540 THEN 0
+ELSE NULL
+END
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- fprm1_decline_threshold_tb_c_v17
+------------------------------------------------------------
+------------------------------------------------------------
+
+IF [FICO8_TU] >= 780 THEN 0.10
+ELSEIF [FICO8_TU] >= 740 AND [FICO8_TU] < 780 THEN 0.10
+ELSEIF [FICO8_TU] >= 700 AND [FICO8_TU] < 740 THEN 0.10
+ELSEIF [FICO8_TU] >= 660 AND [FICO8_TU] < 700 THEN 0.13
+ELSEIF [FICO8_TU] >= 620 AND [FICO8_TU] < 660 THEN 0.13
+ELSEIF [FICO8_TU] >= 580 AND [FICO8_TU] < 620 THEN 0.01
+ELSEIF [FICO8_TU] >= 540 AND [FICO8_TU] < 580 THEN 0.01
+ELSEIF [FICO8_TU] < 540 THEN 0
+ELSE NULL
+END
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- fprm1_decline_threshold_tb_g_v32
+------------------------------------------------------------
+------------------------------------------------------------
+
+IF [FICO8_TU] >= 700 THEN 0.4
+ELSEIF [FICO8_TU] >= 620 THEN 0.5
+ELSEIF [FICO8_TU] >= 540 THEN 0.6
+ELSEIF [FICO8_TU] < 540 THEN 0
+ELSE NULL
+END
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- fprm1_decline_threshold_tb_a_v17
+------------------------------------------------------------
+------------------------------------------------------------
+  
+IF [FICO8_TU] >= 780 THEN 0.26
+ELSEIF [FICO8_TU] >= 740 AND [FICO8_TU] < 780 THEN 0.26
+ELSEIF [FICO8_TU] >= 700 AND [FICO8_TU] < 740 THEN 0.26
+ELSEIF [FICO8_TU] >= 660 AND [FICO8_TU] < 700 THEN 0.29
+ELSEIF [FICO8_TU] >= 620 AND [FICO8_TU] < 660 THEN 0.29
+ELSEIF [FICO8_TU] >= 580 AND [FICO8_TU] < 620 THEN 0.32
+ELSEIF [FICO8_TU] >= 540 AND [FICO8_TU] < 580 THEN 0.32
+ELSEIF [FICO8_TU] < 540 THEN 0
+ELSE NULL
+END
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- fprm1_decline_threshold_tb_d_v17
+------------------------------------------------------------
+------------------------------------------------------------
+if [MERCHANT_GRADE_V17] = 5 then
+    (if [FICO8_TU] >= 780 then 0.07
+    elseif [FICO8_TU] >= 740 then 0.07
+    elseif [FICO8_TU] >= 700 then 0.07
+    elseif [FICO8_TU] >= 660 then 0.12
+    elseif [FICO8_TU] >= 620 then 0.12
+    elseif [FICO8_TU] >= 580 then 0.17
+    elseif [FICO8_TU] >= 540 then 0.17
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+elseif [MERCHANT_GRADE_V17] = 4 then
+    (if [FICO8_TU] >= 780 then 0.12
+    elseif [FICO8_TU] >= 740 then 0.12
+    elseif [FICO8_TU] >= 700 then 0.12
+    elseif [FICO8_TU] >= 660 then 0.16
+    elseif [FICO8_TU] >= 620 then 0.16
+    elseif [FICO8_TU] >= 580 then 0.21
+    elseif [FICO8_TU] >= 540 then 0.21
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+elseif [MERCHANT_GRADE_V17] = 3 then
+    (if [FICO8_TU] >= 780 then 0.18
+    elseif [FICO8_TU] >= 740 then 0.18
+    elseif [FICO8_TU] >= 700 then 0.18
+    elseif [FICO8_TU] >= 660 then 0.21
+    elseif [FICO8_TU] >= 620 then 0.21
+    elseif [FICO8_TU] >= 580 then 0.24
+    elseif [FICO8_TU] >= 540 then 0.24
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+elseif [MERCHANT_GRADE_V17] = 2 then
+    (if [FICO8_TU] >= 780 then 0.20
+    elseif [FICO8_TU] >= 740 then 0.20
+    elseif [FICO8_TU] >= 700 then 0.20
+    elseif [FICO8_TU] >= 660 then 0.23
+    elseif [FICO8_TU] >= 620 then 0.23
+    elseif [FICO8_TU] >= 580 then 0.26
+    elseif [FICO8_TU] >= 540 then 0.26
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+elseif [MERCHANT_GRADE_V17] = 1 then
+    (if [FICO8_TU] >= 780 then 0.26
+    elseif [FICO8_TU] >= 740 then 0.26
+    elseif [FICO8_TU] >= 700 then 0.26
+    elseif [FICO8_TU] >= 660 then 0.29
+    elseif [FICO8_TU] >= 620 then 0.29
+    elseif [FICO8_TU] >= 580 then 0.32
+    elseif [FICO8_TU] >= 540 then 0.32
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+else
+    null
+end
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- fprm1_decline_threshold_tb_e_v17
+------------------------------------------------------------
+------------------------------------------------------------
+
+if [MERCHANT_GRADE_V17] = 5 then
+    (if [FICO8_TU] >= 780 then 0.07
+    elseif [FICO8_TU] >= 740 then 0.07
+    elseif [FICO8_TU] >= 700 then 0.07
+    elseif [FICO8_TU] >= 660 then 0.12
+    elseif [FICO8_TU] >= 620 then 0.12
+    elseif [FICO8_TU] >= 580 then 0.17
+    elseif [FICO8_TU] >= 540 then 0.17
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+elseif [MERCHANT_GRADE_V17] = 4 then
+    (if [FICO8_TU] >= 780 then 0.09
+    elseif [FICO8_TU] >= 740 then 0.09
+    elseif [FICO8_TU] >= 700 then 0.09
+    elseif [FICO8_TU] >= 660 then 0.14
+    elseif [FICO8_TU] >= 620 then 0.14
+    elseif [FICO8_TU] >= 580 then 0.19
+    elseif [FICO8_TU] >= 540 then 0.19
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+elseif [MERCHANT_GRADE_V17] = 3 then
+    (if [FICO8_TU] >= 780 then 0.11
+    elseif [FICO8_TU] >= 740 then 0.11
+    elseif [FICO8_TU] >= 700 then 0.11
+    elseif [FICO8_TU] >= 660 then 0.16
+    elseif [FICO8_TU] >= 620 then 0.16
+    elseif [FICO8_TU] >= 580 then 0.21
+    elseif [FICO8_TU] >= 540 then 0.21
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+elseif [MERCHANT_GRADE_V17] = 2 then
+    (if [FICO8_TU] >= 780 then 0.13
+    elseif [FICO8_TU] >= 740 then 0.13
+    elseif [FICO8_TU] >= 700 then 0.13
+    elseif [FICO8_TU] >= 660 then 0.18
+    elseif [FICO8_TU] >= 620 then 0.18
+    elseif [FICO8_TU] >= 580 then 0.23
+    elseif [FICO8_TU] >= 540 then 0.23
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+elseif [MERCHANT_GRADE_V17] = 1 then
+    (if [FICO8_TU] >= 780 then 0.15
+    elseif [FICO8_TU] >= 740 then 0.15
+    elseif [FICO8_TU] >= 700 then 0.15
+    elseif [FICO8_TU] >= 660 then 0.20
+    elseif [FICO8_TU] >= 620 then 0.20
+    elseif [FICO8_TU] >= 580 then 0.25
+    elseif [FICO8_TU] >= 540 then 0.25
+    elseif [FICO8_TU] < 540 then 0
+    else null
+    end)
+
+else
+    null
+end
+
+
+------------------------------------------------------------
+------------------------------------------------------------
+-- ftr1_decline_threshold_v32
+------------------------------------------------------------
+------------------------------------------------------------
+
+if [UPCODE] in ('UP-17367120-1', 'UP-17367120-50', 'UP-17367120-3') then
+    (if [fprm1] < 0.05 then 1.01
+    elseif [fprm1] >= 0.05 and [fprm1] < 0.10 then 1.01
+    elseif [fprm1] >= 0.10 and [fprm1] < 0.15 then 0.20
+    elseif [fprm1] >= 0.15 and [fprm1] < 0.20 then 0.15
+    elseif [fprm1] >= 0.20 and [fprm1] < 0.25 then 0.10
+    elseif [fprm1] >= 0.25 then 0
+    else null
+    end)
+
+elseif [UPCODE] = 'UP-43928860-60' then 1.01
+
+elseif [MERCHANT_GRADE_V17] in (1,2,3,4,5) then
+    (if [fprm1] < 0.05 then 1.01
+    elseif [fprm1] >= 0.05 and [fprm1] < 0.10 then 1.01
+    elseif [fprm1] >= 0.10 and [fprm1] < 0.15 then 0.20
+    elseif [fprm1] >= 0.15 and [fprm1] < 0.20 then 0.15
+    elseif [fprm1] >= 0.20 and [fprm1] < 0.25 then 0.10
+    elseif [fprm1] >= 0.25 then 0
+    else null
+    end)
+
+else null
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
