@@ -1,3 +1,4 @@
+
 -- decline_qc_v32
 
 if [ADVERSE_ACTIONS] in ('account_blocked','CheckPhoneForVOIPBlockedRule',
